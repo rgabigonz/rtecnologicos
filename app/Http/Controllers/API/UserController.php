@@ -49,7 +49,7 @@ class UserController extends Controller
             'email' => $request['email'],
             'type' => $request['type'],
             'bio' => $request['bio'],
-            'photo' => $request['photo'],
+            //'photo' => $request['photo'],
             'password' => Hash::make($request['password']),
         ]);
     }
@@ -71,21 +71,26 @@ class UserController extends Controller
 
         $currentPhoto = $user->photo;
 
-        if($request->photo != $currentPhoto) {
-            //Genero al nombre unico de la foto de perfil
-            $photoName = time() . '.' . explode('/', explode(':', substr($request->photo, 0, strpos($request->photo, ';')))[1])[1];
-            
-            //Genero la foto del perfil
-            \Image::make($request->photo)->save(public_path('img/profile/').$photoName);
-            $request->merge(['photo' => $photoName]);
+        if (!empty($request->photo)) {
+            if($request->photo != $currentPhoto) {
+                //Genero al nombre unico de la foto de perfil
+                $photoName = time() . '.' . explode('/', explode(':', substr($request->photo, 0, strpos($request->photo, ';')))[1])[1];
+                
+                //Genero la foto del perfil
+                \Image::make($request->photo)->save(public_path('img/profile/').$photoName);
+                $request->merge(['photo' => $photoName]);
 
-            //Elimino la foto anterior si es que existe
-            $userPhoto = public_path('img/profile/').$currentPhoto;
+                //Elimino la foto anterior si es que existe
+                $userPhoto = public_path('img/profile/').$currentPhoto;
 
-            if(file_exists($userPhoto)) {
-                @unlink($userPhoto);
+                if(file_exists($userPhoto) && $currentPhoto != 'default_profile.png') {
+                    @unlink($userPhoto);
+                }
+
             }
-
+        } 
+        else {
+            $request->merge(['photo' => $currentPhoto]);
         }
 
         if(!empty($request->password)) {
@@ -93,7 +98,6 @@ class UserController extends Controller
         }
         
         $user->update($request->all());
-        return ['message' => 'Profile Updated...'];
     }
 
         /**
@@ -124,9 +128,13 @@ class UserController extends Controller
             'password' => 'sometimes|required|min:6'
         ]);
 
+        if(!empty($request->password)) {
+            $request->merge(['password' => Hash::make($request['password'])]);
+        }
+
         $user->update($request->all());
 
-        return ['message' => 'Updated...'];
+        //return ['message' => 'Updated...'];
     }
 
     /**
@@ -140,6 +148,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return ['message' => 'user Deleted'];
+        //return ['message' => 'user Deleted'];
     }
 }

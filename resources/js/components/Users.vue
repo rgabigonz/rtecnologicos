@@ -4,7 +4,7 @@
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">User Table</h3>
+                <h3 class="card-title">Lista de Usuarios</h3>
 
                 <div class="card-tools">
                     <button class="btn btn-success" @click="newModal()">
@@ -17,11 +17,11 @@
                 <table class="table table-hover">
                     <tbody>
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
+                            <th>#</th>
+                            <th>Nombre</th>
                             <th>Email</th>
-                            <th>Type</th>
-                            <th>Registered At</th>
+                            <th>Tipo</th>
+                            <th>Registrado el</th>
                             <th></th>
                         </tr>
                         <tr v-for="user in users" :key="user.id">
@@ -54,8 +54,8 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 v-show="!editMode" class="modal-title" id="addNewLabel">Add User</h5>
-                    <h5 v-show="editMode" class="modal-title" id="addNewLabel">Edit User Info</h5>
+                    <h5 v-show="!editMode" class="modal-title" id="addNewLabel">Agregar Usuario</h5>
+                    <h5 v-show="editMode" class="modal-title" id="addNewLabel">Editar Usuario</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
@@ -63,7 +63,7 @@
                 <form @submit.prevent="editMode ? updateUser() : createUser()">
                     <div class="modal-body">
                         <div class="form-group">
-                            <input v-model="form.name" type="text" name="name" placeholder="Name"
+                            <input v-model="form.name" type="text" name="name" placeholder="Nombre"
                                 class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                             <has-error :form="form" field="name"></has-error>
                         </div>
@@ -73,33 +73,27 @@
                             <has-error :form="form" field="email"></has-error>
                         </div>
                         <div class="form-group">
-                            <textarea v-model="form.bio" type="text" name="bio" id="bio" placeholder="Short bio for user"
+                            <textarea v-model="form.bio" type="text" name="bio" id="bio" placeholder="Experiencia"
                                 class="form-control" :class="{ 'is-invalid': form.errors.has('bio') }"></textarea>
                             <has-error :form="form" field="bio"></has-error>
                         </div>
                         <div class="form-group">
                             <select name="type" v-model="form.type" id="type" class="form-control" :class="{ 'is-invalid': form.errors.has('type') }">
-                                <option value="">Select User Role</option>
-                                <option value="admin">Administrador</option>
-                                <option value="user">Usuario</option>
+                                <option value="usuario">Usuario</option>
+                                <option value="admin">Administrador</option>                                
                             </select>
                             <has-error :form="form" field="type"></has-error>
                         </div>
                         <div class="form-group">
-                            <input v-model="form.photo" type="text" name="photo" placeholder="Photo"
-                                class="form-control" :class="{ 'is-invalid': form.errors.has('photo') }">
-                            <has-error :form="form" field="photo"></has-error>
-                        </div>
-                        <div class="form-group">
-                            <input v-model="form.password" type="password" name="password" id="password" placeholder="Password"
+                            <input v-model="form.password" type="password" name="password" id="password" placeholder="Contraseña"
                                 class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
                             <has-error :form="form" field="password"></has-error>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                        <button v-show="editMode" type="submit" class="btn btn-success">Update</button>
-                        <button v-show="!editMode" type="submit" class="btn btn-primary">Create</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                        <button v-show="editMode" type="submit" class="btn btn-success">Actualizar</button>
+                        <button v-show="!editMode" type="submit" class="btn btn-primary">Crear</button>
                     </div>
                 </form>
             </div>
@@ -119,7 +113,7 @@
                     name: '',
                     email: '',
                     password: '',
-                    type: '',
+                    type: 'usuario',
                     bio: '',                    
                     photo: ''                    
                 })                         
@@ -152,7 +146,7 @@
                     this.closeModal();
                     toast({
                         type: 'success',
-                        title: 'User update correctly!'
+                        title: 'Se actualizaron los datos correctamente!'
                     });
                     this.$Progress.finish();
                 })
@@ -169,7 +163,7 @@
                     this.closeModal();
                     toast({
                         type: 'success',
-                        title: 'User created correctly!'
+                        title: 'Se creo el usuario correctamente!'
                     });
 
                 })
@@ -181,20 +175,21 @@
             },
             deleteUser(id) {
                 swal({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
+                    title: 'Esta seguro?',
+                    text: "No se puede volver atras!",
                     type: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
+                    confirmButtonText: 'Si, eliminar registro',
+                    cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.value) {
                         this.form.delete('api/user/'+id)
                         .then(() => {
                             swal(
-                                'Deleted!',
-                                'Your file has been deleted.',
+                                'Borrado!',
+                                'El registro ah sido eliminado.',
                                 'success'
                             );
                             Fire.$emit('AfterAction');
@@ -202,7 +197,7 @@
                     }
                 })
                 .catch(() => {
-                    swal('Failed!', 'There was something worng.', 'warning');                    
+                    swal('Fallo!', 'Hubo un error al procesar la transaccion.', 'warning');                    
                 });
             }
         },

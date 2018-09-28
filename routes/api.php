@@ -23,3 +23,14 @@ Route::apiResources([
 
 Route::get('profile', 'API\UserController@profile');
 Route::put('profile', 'API\UserController@updateProfile');
+
+Route::apiResources([
+    'task' => 'API\TaskController'
+]);
+
+Route::put('state/{id}', 'API\TaskController@updateState');
+Route::get('taskstat', 'API\TaskController@taskStatistics');
+
+//Detalles de tareas
+Route::get('taskdetail/{id}', 'API\TaskController@taskDetail');
+Route::post('taskdetail', 'API\TaskController@storeDetail');

@@ -52,8 +52,8 @@ let routes = [
     { path: '/dashboard', component: require('./components/Dashboard.vue') },
     { path: '/users', component: require('./components/Users.vue') },
     { path: '/profile', component: require('./components/Profile.vue') },
-    { path: '/developer', component: require('./components/Developer.vue') }
-
+    { path: '/tasks', component: require('./components/Tasks.vue') }, 
+    { path: '/taskdetails/:taskId', name: 'taskdetails', component: require('./components/TasksDetail.vue') }
 ]
 
 const router = new VueRouter({
@@ -66,11 +66,20 @@ Vue.filter('upText', function(text){
 });
 
 Vue.filter('formatDate', function(myDate){
-    return moment(myDate).format('DD-MM-YYYY');
+    if (myDate) {
+        return moment(myDate).format('DD-MM-YYYY');
+    }
+});
+
+Vue.filter('formatState', function(myState){
+    if (myState == 1) {
+        return 'Finalizada';
+    } else if (myState == 0) {
+        return 'Pendiente';
+    }
 });
 
 window.Fire = new Vue();
-
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -78,7 +87,7 @@ window.Fire = new Vue();
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component(
+/*Vue.component(
     'passport-clients',
     require('./components/passport/Clients.vue')
 );
@@ -93,7 +102,7 @@ Vue.component(
     require('./components/passport/PersonalAccessTokens.vue')
 );
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('example-component', require('./components/ExampleComponent.vue'));*/
 
 const app = new Vue({
     el: '#app',
