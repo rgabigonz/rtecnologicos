@@ -73398,6 +73398,37 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -73407,11 +73438,55 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             form: new Form({
                 id: '',
                 name: ''
-            })
+            }),
+            pagination: {
+                'total': 0,
+                'current_page': 0,
+                'per_page': 0,
+                'last_page': 0,
+                'from': 0,
+                'to': 0
+            },
+            offset: 3,
+            sCriterio: 'name',
+            sBuscar: ''
         };
     },
 
+    computed: {
+        isActived: function isActived() {
+            return this.pagination.current_page;
+        },
+        pageNumber: function pageNumber() {
+            if (!this.pagination.to) {
+                return [];
+            }
+
+            var from = this.pagination.current_page - this.offset;
+            if (from < 1) {
+                from = 1;
+            }
+
+            var to = from + this.offset * 2;
+            if (to >= this.pagination.last_page) {
+                to = this.pagination.last_page;
+            }
+
+            var pagesArray = [];
+            while (from <= to) {
+                pagesArray.push(from);
+                from++;
+            }
+
+            return pagesArray;
+        }
+    },
     methods: {
+        cambiarPagina: function cambiarPagina(page, buscar, criterio) {
+            //let me = this;
+            this.pagination.current_page = page;
+            this.loadTasks(page, buscar, criterio);
+        },
         newModal: function newModal() {
             this.editMode = false;
             this.form.reset();
@@ -73424,35 +73499,39 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.form.fill(task);
         },
         closeModal: function closeModal() {
+            this.form.reset();
             $('#addNew').modal('hide');
         },
-        loadTasks: function loadTasks() {
-            var _this = this;
-
-            axios.get("api/task").then(function (_ref) {
-                var data = _ref.data;
-                return _this.tasks = data.data;
+        loadTasks: function loadTasks(page, buscar, criterio) {
+            var me = this;
+            //axios.get("api/task?page=" + page).then(({ data }) => (this.tasks = data.data));
+            var url = 'api/task?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
+            axios.get(url).then(function (data) {
+                var response = data.data;
+                me.tasks = response.tasks.data;
+                me.pagination = response.pagination;
             });
         },
+        searchTasks: function searchTasks() {},
         updateTask: function updateTask() {
-            var _this2 = this;
+            var _this = this;
 
             this.$Progress.start();
 
             this.form.put('api/task/' + this.form.id).then(function () {
                 Fire.$emit('AfterAction');
-                _this2.closeModal();
+                _this.closeModal();
                 toast({
                     type: 'success',
                     title: 'Se actualizaron los datos correctamente!'
                 });
-                _this2.$Progress.finish();
+                _this.$Progress.finish();
             }).catch(function () {
-                _this2.$Progress.fail();
+                _this.$Progress.fail();
             });
         },
         stateTask: function stateTask(taskId) {
-            var _this3 = this;
+            var _this2 = this;
 
             swal({
                 title: 'Ud. esta por cambiar el estado de la tarea, desea continuar?',
@@ -73464,7 +73543,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 cancelButtonText: 'Cancelar'
             }).then(function (result) {
                 if (result.value) {
-                    _this3.form.put('api/state/' + taskId).then(function () {
+                    _this2.form.put('api/state/' + taskId).then(function () {
                         swal('Cambiado!', 'El estado ha sido cambiado.', 'success');
                         Fire.$emit('AfterAction');
                     });
@@ -73474,25 +73553,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         },
         createTask: function createTask() {
-            var _this4 = this;
+            var _this3 = this;
 
             this.$Progress.start();
 
             this.form.post('api/task').then(function () {
                 Fire.$emit('AfterAction');
-                _this4.closeModal();
+                _this3.closeModal();
                 toast({
                     type: 'success',
                     title: 'Se creo la tarea correctamente!'
                 });
             }).catch(function () {
-                _this4.$Progress.fail();
+                _this3.$Progress.fail();
             });
 
             this.$Progress.finish();
         },
         deleteTask: function deleteTask(id) {
-            var _this5 = this;
+            var _this4 = this;
 
             swal({
                 title: 'Esta seguro?',
@@ -73505,7 +73584,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 cancelButtonText: 'Cancelar'
             }).then(function (result) {
                 if (result.value) {
-                    _this5.form.delete('api/task/' + id).then(function () {
+                    _this4.form.delete('api/task/' + id).then(function () {
                         swal('Borrado!', 'El registro ah sido eliminado.', 'success');
                         Fire.$emit('AfterAction');
                     });
@@ -73516,11 +73595,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     created: function created() {
-        var _this6 = this;
+        var _this5 = this;
 
-        this.loadTasks();
+        this.loadTasks(1, this.sBuscar, this.sCriterio);
         Fire.$on('AfterAction', function () {
-            _this6.loadTasks();
+            _this5.loadTasks(1, _this5.sBuscar, _this5.sCriterio);
         });
     }
 });
@@ -73536,8 +73615,113 @@ var render = function() {
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row mt-5" }, [
       _c("div", { staticClass: "col-md-12" }, [
-        _c("div", { staticClass: "card" }, [
-          _c("div", { staticClass: "card-header" }, [
+        _c("div", { staticClass: "card border-success mb-3" }, [
+          _c(
+            "div",
+            { staticClass: "card-header bg-transparent border-light" },
+            [
+              _vm._v("Busqueda\n                "),
+              _c("div", { staticClass: "card-tools" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-secondary",
+                    on: {
+                      click: function($event) {
+                        _vm.loadTasks(1, _vm.sBuscar, _vm.sCriterio)
+                      }
+                    }
+                  },
+                  [_c("i", { staticClass: "fas fa-search fa-fw" })]
+                )
+              ])
+            ]
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-body" }, [
+            _c("div", { staticClass: "row" }, [
+              _c("div", { staticClass: "col col-md-4" }, [
+                _c(
+                  "select",
+                  {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.sCriterio,
+                        expression: "sCriterio"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    on: {
+                      change: function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value
+                            return val
+                          })
+                        _vm.sCriterio = $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      }
+                    }
+                  },
+                  [
+                    _c("option", { attrs: { value: "name" } }, [
+                      _vm._v("Tarea")
+                    ]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "created_at" } }, [
+                      _vm._v("Fecha")
+                    ])
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col col-md-8" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.sBuscar,
+                      expression: "sBuscar"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    placeholder: "Dato a buscar (Fecha YYYY-MM-DD)"
+                  },
+                  domProps: { value: _vm.sBuscar },
+                  on: {
+                    keyup: function($event) {
+                      if (
+                        !("button" in $event) &&
+                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                      ) {
+                        return null
+                      }
+                      _vm.loadTasks(1, _vm.sBuscar, _vm.sCriterio)
+                    },
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.sBuscar = $event.target.value
+                    }
+                  }
+                })
+              ])
+            ])
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "card border-info mb-3" }, [
+          _c("div", { staticClass: "card-header border-light" }, [
             _c("h3", { staticClass: "card-title" }, [
               _vm._v("Lista de Tareas")
             ]),
@@ -73664,6 +73848,85 @@ var render = function() {
                 2
               )
             ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-footer clearfix" }, [
+            _c(
+              "ul",
+              { staticClass: "pagination pagination-sm m-0 float-right" },
+              [
+                _vm.pagination.current_page > 1
+                  ? _c("li", { staticClass: "page-item" }, [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "page-link",
+                          attrs: { href: "#" },
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              _vm.cambiarPagina(
+                                _vm.pagination.current_page - 1,
+                                _vm.sBuscar,
+                                _vm.sCriterio
+                              )
+                            }
+                          }
+                        },
+                        [_vm._v("«")]
+                      )
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm._l(_vm.pageNumber, function(page) {
+                  return _c(
+                    "li",
+                    {
+                      key: page,
+                      staticClass: "page-item",
+                      class: [page == _vm.isActived ? "active" : ""]
+                    },
+                    [
+                      _c("a", {
+                        staticClass: "page-link",
+                        attrs: { href: "#" },
+                        domProps: { textContent: _vm._s(page) },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            _vm.cambiarPagina(page, _vm.sBuscar, _vm.sCriterio)
+                          }
+                        }
+                      })
+                    ]
+                  )
+                }),
+                _vm._v(" "),
+                _vm.pagination.current_page < _vm.pagination.last_page
+                  ? _c("li", { staticClass: "page-item" }, [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "page-link",
+                          attrs: { href: "#" },
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              _vm.cambiarPagina(
+                                _vm.pagination.current_page + 1,
+                                _vm.sBuscar,
+                                _vm.sCriterio
+                              )
+                            }
+                          }
+                        },
+                        [_vm._v("»")]
+                      )
+                    ])
+                  : _vm._e()
+              ],
+              2
+            )
           ])
         ])
       ])

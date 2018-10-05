@@ -25,16 +25,49 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $sBuscar = $request->buscar;
+        $sCriterio = $request->criterio;
+
         $user = auth('api')->user();
 
-        $tasks = Task::where('user_id', $user->id)
-        ->orderBy('completed', 'asc')
-        ->orderBy('updated_at', 'desc')
-        ->paginate(20);
+        if(empty($sBuscar)) {
+            $tasks = Task::where('user_id', $user->id)
+            ->orderBy('completed', 'asc')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(8);
+        } 
+        else {
+            if($sCriterio == 'created_at') {
+                $tasks = Task::where('user_id', $user->id)
+                ->whereDate($sCriterio, $sBuscar)
+                ->orderBy('completed', 'asc')
+                ->orderBy('updated_at', 'desc')
+                ->paginate(8);
+            }
+            else {
+                $tasks = Task::where('user_id', $user->id)
+                ->where($sCriterio, 'like', '%' . $sBuscar . '%')
+                ->orderBy('completed', 'asc')
+                ->orderBy('updated_at', 'desc')
+                ->paginate(8);
+            }                
+        }
 
-        return $tasks;
+        //return $tasks;
+        return [
+            'pagination' => [
+                'total'         => $tasks->total(),
+                'current_page'  => $tasks->currentPage(),
+                'per_page'      => $tasks->perPage(),
+                'last_page'     => $tasks->lastPage(),
+                'from'          => $tasks->firstItem(),
+                'to'            => $tasks->lastItem(),
+            ],
+            'tasks' => $tasks
+        ];
+
     }
 
     /**
@@ -49,6 +82,8 @@ class TaskController extends Controller
 
         $this->validate($request, [
             'name' => 'required|string|max:191'
+        ], [
+            'name.required' => 'El nombre es requerido',
         ]);
 
         return Task::create([
@@ -70,6 +105,8 @@ class TaskController extends Controller
 
         $this->validate($request, [
             'name' => 'required|string|max:191'
+        ], [
+            'name.required' => 'El nombre es requerido',
         ]);
 
         $task->update($request->all());

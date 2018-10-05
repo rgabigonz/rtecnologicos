@@ -30,18 +30,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
       </li>
     </ul>
     
-    <!-- SEARCH FORM -->
-    <form class="form-inline ml-3">
-      <div class="input-group input-group-sm">
-        <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-        <div class="input-group-append">
-          <button class="btn btn-navbar" type="submit">
-            <i class="fa fa-search"></i>
-          </button>
-        </div>
-      </div>
-    </form>
-
   </nav>
   <!-- /.navbar -->
 
@@ -81,7 +69,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 Dashboard
               </p>
             </router-link>
-          </li>    
+          </li>
+
+          @can('isAdmin')
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fa fa-cog green"></i>
@@ -91,14 +81,37 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </p>
             </a>
             <ul class="nav nav-treeview">
+              <li class="dropdown-divider"></li>
               <li class="nav-item">
                 <router-link to="/users" class="nav-link">
-                  <i class="fas fa-users nav-icon"></i>
+                  <i class="fas fa-user-secret nav-icon purple"></i>
+                  <p>Tipos de Usuarios</p>
+                </router-link>
+              </li>
+              <li class="nav-item">
+                <router-link to="/users" class="nav-link">
+                  <i class="fas fa-user-graduate nav-icon teal"></i>
+                  <p>Titulos de Usuarios</p>
+                </router-link>
+              </li>
+              <li class="nav-item">
+                <router-link to="/users" class="nav-link">
+                  <i class="fas fa-users nav-icon pink"></i>
                   <p>Usuarios</p>
                 </router-link>
               </li>
+              <li class="dropdown-divider"></li>
+              <li class="nav-item">
+                <router-link to="/users" class="nav-link">
+                  <i class="fas fa-building nav-icon yellow"></i>
+                  <p>Empresas</p>
+                </router-link>
+              </li>
+              <li class="dropdown-divider"></li>
             </ul>
           </li>
+          @endcan
+
           <li class="nav-item">
             <router-link to="/tasks" class="nav-link">
               <i class="nav-icon fas fa-cogs"></i>

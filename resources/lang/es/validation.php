@@ -1,7 +1,5 @@
 <?php
-
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Validation Language Lines
@@ -12,7 +10,6 @@ return [
     | such as the size rules. Feel free to tweak each of these messages.
     |
     */
-
     'accepted'             => ':attribute debe ser aceptado.',
     'active_url'           => ':attribute no es una URL válida.',
     'after'                => ':attribute debe ser una fecha posterior a :date.',
@@ -34,11 +31,9 @@ return [
     'different'            => ':attribute y :other deben ser diferentes.',
     'digits'               => ':attribute debe tener :digits dígitos.',
     'digits_between'       => ':attribute debe tener entre :min y :max dígitos.',
-    'dimensions'           => 'Las dimensiones de la imagen :attribute no son validas.',
     'distinct'             => 'El campo :attribute contiene un valor duplicado.',
     'email'                => ':attribute no es un correo válido',
     'exists'               => ':attribute es inválido.',
-    'file'                 => 'The :attribute must be a file.',
     'filled'               => 'El campo :attribute es obligatorio.',
     'image'                => ':attribute debe ser una imagen.',
     'in'                   => ':attribute es inválido.',
@@ -81,7 +76,7 @@ return [
     'timezone'             => 'El :attribute debe ser una zona válida.',
     'unique'               => ':attribute ya ha sido registrado.',
     'url'                  => 'El formato :attribute es inválido.',
-
+    'captcha'              => 'El código captcha ingresado no es correcto',
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
@@ -92,13 +87,11 @@ return [
     | specify a specific custom language line for a given attribute rule.
     |
     */
-
     'custom'               => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
     ],
-
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Attributes
@@ -109,20 +102,19 @@ return [
     | of "email". This simply helps us make messages a little cleaner.
     |
     */
-
     'attributes'           => [
         'name'                  => 'nombre',
         'username'              => 'usuario',
         'email'                 => 'correo electrónico',
         'first_name'            => 'nombre',
-        'last_name'             => 'apellidos',
+        'last_name'             => 'apellido',
         'password'              => 'contraseña',
         'password_confirmation' => 'confirmación de la contraseña',
         'city'                  => 'ciudad',
         'country'               => 'país',
         'address'               => 'dirección',
         'phone'                 => 'teléfono',
-        'mobile'                => 'móvil',
+        'mobile'                => 'celular',
         'age'                   => 'edad',
         'sex'                   => 'sexo',
         'gender'                => 'género',
@@ -140,14 +132,6 @@ return [
         'time'                  => 'hora',
         'subject'               => 'asunto',
         'message'               => 'mensaje',
-        'Register'              => 'registrarse',
-        'system_id'             => 'sistema operativo',
-        'dependence_id'         => 'dependencia',
-        'type'                  => 'tipo',
-        'price'                 => 'precio',
-        'lastname'              => 'apellido',
-        'phonenumber'           => 'telefono',
-        'state'                 => 'estado',
+        'required'              => 'Requerido',
     ],
-
 ];

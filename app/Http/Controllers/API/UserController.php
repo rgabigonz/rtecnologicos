@@ -18,6 +18,7 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api');
+        //$this->authorize('isAdmin');
     }
 
     /**
@@ -100,17 +101,6 @@ class UserController extends Controller
         $user->update($request->all());
     }
 
-        /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      *
@@ -133,8 +123,6 @@ class UserController extends Controller
         }
 
         $user->update($request->all());
-
-        //return ['message' => 'Updated...'];
     }
 
     /**
@@ -145,9 +133,9 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('isAdmin');
+
         $user = User::findOrFail($id);
         $user->delete();
-
-        //return ['message' => 'user Deleted'];
     }
 }

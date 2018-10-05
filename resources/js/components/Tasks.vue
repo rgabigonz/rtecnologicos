@@ -2,14 +2,31 @@
     <div class="container">
         <div class="row mt-5">
           <div class="col-md-12">
-            <div class="card">
-              <div class="card-header">
+            <div class="card border-success mb-3">
+                <div class="card-header bg-transparent border-light">Busqueda
+                    <div class="card-tools">
+                        <button class="btn btn-secondary" @click="loadTasks(1, sBuscar, sCriterio)"><i class="fas fa-search fa-fw"></i></button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col col-md-4">
+                            <select class="form-control" v-model="sCriterio">
+                                <option value="name">Tarea</option>
+                                <option value="created_at">Fecha</option>
+                            </select>
+                        </div>
+                        <div class="col col-md-8">
+                            <input v-model="sBuscar" @keyup.enter="loadTasks(1, sBuscar, sCriterio)" type="text" class="form-control" placeholder="Dato a buscar (Fecha YYYY-MM-DD)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-info mb-3">
+              <div class="card-header border-light">
                 <h3 class="card-title">Lista de Tareas</h3>
-
                 <div class="card-tools">
-                    <button class="btn btn-success" @click="newModal()">
-                        <i class="fas fa-plus fa-fw"></i>
-                    </button>
+                    <button class="btn btn-success" @click="newModal()"><i class="fas fa-plus fa-fw"></i></button>
                 </div>
               </div>
               <!-- /.card-header -->
@@ -48,6 +65,20 @@
                 </table>
               </div>
               <!-- /.card-body -->
+              <div class="card-footer clearfix">
+                <ul class="pagination pagination-sm m-0 float-right">
+                  <li class="page-item" v-if="pagination.current_page > 1">
+                      <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page - 1, sBuscar, sCriterio)">«</a>
+                  </li>
+                  <li class="page-item" v-for="page in pageNumber" :key="page" :class="[page == isActived ? 'active': '']">
+                      <a class="page-link" href="#" @click.prevent="cambiarPagina(page, sBuscar, sCriterio)" v-text="page"></a>
+                  </li>
+                  <li class="page-item" v-if="pagination.current_page < pagination.last_page">
+                      <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page + 1, sBuscar, sCriterio)">»</a>
+                  </li>
+                </ul>
+              </div>
+              <!-- /.card-footer -->           
             </div>
             <!-- /.card -->
           </div>
@@ -93,10 +124,54 @@
                 form: new Form({
                     id: '',
                     name: ''                    
-                })
+                }),
+                pagination: {
+                    'total': 0,
+                    'current_page': 0,
+                    'per_page': 0,
+                    'last_page': 0,
+                    'from': 0,
+                    'to': 0
+                },
+                offset: 3,
+                sCriterio: 'name',
+                sBuscar: ''
+            }
+        },
+        computed: {
+            isActived: function() {
+                return this.pagination.current_page;
+            },
+            pageNumber: function() {
+                if(!this.pagination.to) {
+                    return [];
+                }
+
+                var from = this.pagination.current_page - this.offset;
+                if(from < 1) {
+                    from = 1;
+                }
+
+                var to = from + (this.offset * 2);
+                if(to >= this.pagination.last_page) {
+                    to = this.pagination.last_page;
+                }
+
+                var pagesArray = [];
+                while(from <= to) {
+                    pagesArray.push(from);
+                    from++;
+                }
+
+                return pagesArray;
             }
         },
         methods: {
+            cambiarPagina(page, buscar, criterio){
+                //let me = this;
+                this.pagination.current_page = page;
+                this.loadTasks(page, buscar, criterio);
+            },
             newModal() {
                 this.editMode = false;
                 this.form.reset();
@@ -109,10 +184,21 @@
                 this.form.fill(task);
             },
             closeModal() {
+                this.form.reset();
                 $('#addNew').modal('hide');
             },
-            loadTasks() {
-                axios.get("api/task").then(({ data }) => (this.tasks = data.data));
+            loadTasks(page, buscar, criterio) {
+                let me = this;                
+                //axios.get("api/task?page=" + page).then(({ data }) => (this.tasks = data.data));
+                var url = 'api/task?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
+                axios.get(url).then(function (data) {
+                    var response = data.data;
+                    me.tasks = response.tasks.data;
+                    me.pagination = response.pagination;
+                });
+            },
+            searchTasks () {
+                
             },
             updateTask() {
                 this.$Progress.start();
@@ -205,9 +291,9 @@
             }
         },
         created() {
-            this.loadTasks();
+            this.loadTasks(1, this.sBuscar, this.sCriterio);
             Fire.$on('AfterAction', () => {
-                this.loadTasks();
+                this.loadTasks(1, this.sBuscar, this.sCriterio);
             });
         }
     }

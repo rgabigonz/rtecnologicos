@@ -34,3 +34,4 @@ Route::get('taskstat', 'API\TaskController@taskStatistics');
 //Detalles de tareas
 Route::get('taskdetail/{id}', 'API\TaskController@taskDetail');
 Route::post('taskdetail', 'API\TaskController@storeDetail');
+
