@@ -36,7 +36,7 @@ class TaskController extends Controller
             $tasks = Task::where('user_id', $user->id)
             ->orderBy('completed', 'asc')
             ->orderBy('updated_at', 'desc')
-            ->paginate(8);
+            ->paginate(15);
         } 
         else {
             if($sCriterio == 'created_at') {
@@ -44,14 +44,14 @@ class TaskController extends Controller
                 ->whereDate($sCriterio, $sBuscar)
                 ->orderBy('completed', 'asc')
                 ->orderBy('updated_at', 'desc')
-                ->paginate(8);
+                ->paginate(15);
             }
             else {
                 $tasks = Task::where('user_id', $user->id)
                 ->where($sCriterio, 'like', '%' . $sBuscar . '%')
                 ->orderBy('completed', 'asc')
                 ->orderBy('updated_at', 'desc')
-                ->paginate(8);
+                ->paginate(15);
             }                
         }
 
@@ -184,12 +184,46 @@ class TaskController extends Controller
     {
         $this->validate($request, [
             'description' => 'required|string'
+        ], [
+            'description.required' => 'La descripcion es requerida',
         ]);
 
         return TaskDetail::create([
             'description' => $request['description'],
             'task_id' => $request['task_id'],
         ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateDetail(Request $request, $id)
+    {
+        $taskD = TaskDetail::findOrFail($id);
+
+        $this->validate($request, [
+            'description' => 'required|string'
+        ], [
+            'description.required' => 'La descripcion es requerida',
+        ]);
+
+        $taskD->update($request->all());
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroyDelete($id)
+    {
+        $taskD = TaskDetail::findOrFail($id);
+        $taskD->delete();
     }
 
     //Procesos detalles de las tareas

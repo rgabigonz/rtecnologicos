@@ -51,7 +51,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </div>
         <div class="info">
           <a href="#" class="d-block">
-            {{ Auth::user()->name }}
+            {{ Auth::user()->name }} ({{ Auth::user()->type }})            
           </a>
         </div>
       </div>
@@ -173,6 +173,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
   </footer>
 </div>
 <!-- ./wrapper -->
+
+@auth
+<script>
+  window.user = @json(auth()->user())
+</script>  
+@endauth
 
 <script src="/js/app.js"></script>
 </body>

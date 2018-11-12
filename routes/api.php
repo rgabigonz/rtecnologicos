@@ -34,4 +34,6 @@ Route::get('taskstat', 'API\TaskController@taskStatistics');
 //Detalles de tareas
 Route::get('taskdetail/{id}', 'API\TaskController@taskDetail');
 Route::post('taskdetail', 'API\TaskController@storeDetail');
+Route::put('taskdetail/{id}', 'API\TaskController@updateDetail');
+Route::delete('taskdetail/{id}', 'API\TaskController@destroyDelete');
 

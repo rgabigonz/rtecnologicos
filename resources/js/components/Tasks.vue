@@ -189,16 +189,17 @@
             },
             loadTasks(page, buscar, criterio) {
                 let me = this;                
-                //axios.get("api/task?page=" + page).then(({ data }) => (this.tasks = data.data));
                 var url = 'api/task?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
-                axios.get(url).then(function (data) {
+                axios.get(url).then(data => {
                     var response = data.data;
                     me.tasks = response.tasks.data;
                     me.pagination = response.pagination;
+                }).catch((error) => {
+                    if (error.response.status == 401) {
+                        swal('Error!', 'La sesion ha caducado.', 'warning');
+			            me.$router.push('/login');
+                    }
                 });
-            },
-            searchTasks () {
-                
             },
             updateTask() {
                 this.$Progress.start();
@@ -254,7 +255,6 @@
                         type: 'success',
                         title: 'Se creo la tarea correctamente!'
                     });
-
                 })
                 .catch(() => {
                     this.$Progress.fail();

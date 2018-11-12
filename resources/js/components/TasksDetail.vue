@@ -23,10 +23,10 @@
                         <tr v-for="taskD in taskDetails" :key="taskD.id">
                             <td>{{ taskD.description }}</td>
                             <td nowrap>
-                                <a href="#" @click="editModal(taskD)" v-show="!taskD.completed">
+                                <a href="#" @click="editTaskD(taskD)">
                                     <i class="fa fa-edit blue"></i>
                                 </a>
-                                <a href="#" @click="deleteTask(taskD.id)" v-show="!taskD.completed">
+                                <a href="#" @click="deleteTaskDetail(taskD.id)">
                                     <i class="fa fa-trash red"></i>
                                 </a>
                             </td>
@@ -43,7 +43,7 @@
                                 </div>
                                 <!-- /.card-header -->
                                 <!-- form start -->
-                                <form class="form-horizontal" @submit.prevent="createTaskDetail()">
+                                <form class="form-horizontal" @submit.prevent="editMode ? updateTaskDetail() : createTaskDetail()">
                                     <div class="card-body">
                                         <div class="form-group">
                                             <textarea v-model="form.description" type="text" name="description" placeholder="Actividad"
@@ -53,7 +53,7 @@
                                     </div>
                                     <!-- /.card-body -->
                                     <div class="card-footer">
-                                        <button type="submit" class="btn btn-primary float-right">Agregar</button>
+                                        <button type="submit" class="btn btn-success">Guardar detalle</button>
                                     </div>
                                     <!-- /.card-footer -->
                                 </form>
@@ -91,7 +91,8 @@
             },
             createTaskDetail() {
                 this.$Progress.start();
-                
+                console.log(this.form.task_id);
+                console.log(this.taskId);
                 this.form.task_id = this.taskId;
                 this.form.post('api/taskdetail')
                 .then(() => {
@@ -100,13 +101,63 @@
                         type: 'success',
                         title: 'Se creo la actividad correctamente!'
                     });
-
+                    this.form.reset();
                 })
                 .catch(() => {
                     this.$Progress.fail();
                 });
 
                 this.$Progress.finish();
+            },
+            editTaskD(taskD) {
+                    this.editMode = true;
+                    this.form.reset();
+                    this.form.fill(taskD);
+            },
+            updateTaskDetail() {
+                this.$Progress.start();
+                
+                this.form.put('api/taskdetail/'+this.form.id)
+                .then(() => {
+                    this.editMode = false;
+                    this.form.reset();
+                    Fire.$emit('AfterAction');
+                    toast({
+                        type: 'success',
+                        title: 'Se actualizaron los datos correctamente!'
+                    });
+                    this.$Progress.finish();
+                })
+                .catch(() => {
+                    this.$Progress.fail();
+                });
+            },
+            deleteTaskDetail(id) {
+                swal({
+                    title: 'Esta seguro?',
+                    text: "No se puede volver atras!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, eliminar registro',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.value) {
+                        this.form.delete('api/taskdetail/'+id)
+                        .then(() => {
+                            swal(
+                                'Borrado!',
+                                'El registro ah sido eliminado.',
+                                'success'
+                            );
+                            Fire.$emit('AfterAction');
+                        })
+                    }
+                })
+                .catch(() => {
+                    swal('Fallo!', 'Hubo un error al procesar la transaccion.', 'warning');                    
+                });
             }
         },
         created() {

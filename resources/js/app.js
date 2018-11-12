@@ -9,6 +9,9 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+import Gate from "./Gate";
+Vue.prototype.$gate = new Gate(window.user);
+
 import swal from 'sweetalert2';
 window.swal = swal;
 
@@ -40,7 +43,8 @@ Vue.use(VueProgressBar, options)
 
 import moment from 'moment';
 
-import { Form, HasError, AlertError } from 'vform'
+import { Form, HasError, AlertError } from 'vform';
+
 window.Form = Form;
 Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
@@ -103,6 +107,11 @@ Vue.component(
 );
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));*/
+
+Vue.component(
+    'not-found',
+    require('./components/NotFound.vue')
+);
 
 const app = new Vue({
     el: '#app',
